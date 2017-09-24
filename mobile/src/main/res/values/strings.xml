@@ -3,4 +3,5 @@
     <string name="action_settings">Settings</string>
     <string name="TextAccueil">Vos activités</string>
     <string name="TitleAjout">Ajout d\'une activité</string>
+    <string name="textAccueil">Vos activités</string>
 </resources>
