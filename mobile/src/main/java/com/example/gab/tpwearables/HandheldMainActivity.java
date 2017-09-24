@@ -24,7 +24,9 @@ public class HandheldMainActivity extends AppCompatActivity {
                 CreateActivity();
             }
         });
-            }
+
+        // TODO: 24/09/2017 Gerer le linearLayout qui affiche toutes les activité deja crées. 
+    }
 
     protected void CreateActivity(){
 

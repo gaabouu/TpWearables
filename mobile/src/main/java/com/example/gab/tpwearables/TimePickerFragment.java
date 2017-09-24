@@ -25,6 +25,7 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
         return new TimePickerDialog(getActivity(), this, hour, minute, DateFormat.is24HourFormat(getActivity()));
     }
 
+    // TODO: 24/09/2017 Comme pour DatePicker 
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         Calendar c2 = Calendar.getInstance();
         c2.set(c2.HOUR_OF_DAY, hourOfDay);

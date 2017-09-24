@@ -43,7 +43,7 @@ public class CreationActivity extends AppCompatActivity {
             }
         });
 
-
+    /// TODO: 24/09/2017 gerer la sauvegarde de la nouvelle activité 
         //Implémenter la sauvegarde ici
         FloatingActionButton saveButton = (FloatingActionButton) findViewById(R.id.SaveFab);
         saveButton.setOnClickListener(new View.OnClickListener() {
