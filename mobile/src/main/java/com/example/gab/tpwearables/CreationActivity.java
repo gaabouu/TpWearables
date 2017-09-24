@@ -1,7 +1,9 @@
 package com.example.gab.tpwearables;
 
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -30,5 +32,15 @@ public class CreationActivity extends AppCompatActivity {
 
         typeSpinner.setAdapter(typeAdapter);
 
+    }
+
+    public void showDatePickerDialog(View v) {
+        DialogFragment dateFragment = new DatePickerFragment();
+        dateFragment.show(getSupportFragmentManager(), "datePicker");
+    }
+
+    public void showTimePickerDialog(View v) {
+        DialogFragment timeFragment = new TimePickerFragment();
+        timeFragment.show(getSupportFragmentManager(), "timePicker");
     }
 }
