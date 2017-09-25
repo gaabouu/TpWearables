@@ -5,11 +5,17 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.text.format.Time;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -50,9 +56,51 @@ public class CreationActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Toast t = Toast.makeText(getApplicationContext(), "Sauvegarde de la nouvelle activité", Toast.LENGTH_LONG);
                 t.show();
+                try {
+                    saveActivity();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
+    }
+
+    protected void saveActivity() throws ParseException {
+        EditText titleEdit = (EditText) findViewById(R.id.nameEdit);
+        String title = titleEdit.getText().toString();
+
+        EditText descEdit = (EditText) findViewById(R.id.descEdit);
+        String desc = descEdit.getText().toString();
+
+        Spinner typespin = (Spinner)findViewById(R.id.typeSpinner);
+        String type = typespin.getSelectedItem().toString();
+
+        TextView dateText = (TextView)findViewById(R.id.dateText);
+        String dateS = dateText.getText().toString();
+        Date date;
+        date = this.toDate(dateS);
+
+        TextView timeText = (TextView)findViewById(R.id.timeText);
+        String timeS = timeText.getText().toString();
+        Date time;
+        time = this.timeToDate(timeS);
+
+        // TODO: 25/09/17 Tester si ça marche 
+
+        // TODO: 25/09/17 Enregistrer tout ça dans une bdd
+
+
+    }
+
+    protected Date toDate(String dateS) throws ParseException{
+        SimpleDateFormat formatter = new SimpleDateFormat("E dd MMM yyyy");
+        return formatter.parse(dateS);
+    }
+
+    protected Date timeToDate(String timeS) throws ParseException{
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+        return formatter.parse(timeS);
     }
 
     public void showDatePickerDialog(View v) {
