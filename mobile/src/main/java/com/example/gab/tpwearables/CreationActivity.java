@@ -54,8 +54,8 @@ public class CreationActivity extends AppCompatActivity {
         FloatingActionButton saveButton = (FloatingActionButton) findViewById(R.id.SaveFab);
         saveButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Toast t = Toast.makeText(getApplicationContext(), "Sauvegarde de la nouvelle activité", Toast.LENGTH_LONG);
-                t.show();
+              //  Toast t = Toast.makeText(getApplicationContext(), "Sauvegarde de la nouvelle activité", Toast.LENGTH_LONG);
+               // t.show();
                 try {
                     saveActivity();
                 } catch (ParseException e) {
@@ -78,13 +78,15 @@ public class CreationActivity extends AppCompatActivity {
 
         TextView dateText = (TextView)findViewById(R.id.dateText);
         String dateS = dateText.getText().toString();
-        Date date;
-        date = this.toDate(dateS);
+
 
         TextView timeText = (TextView)findViewById(R.id.timeText);
         String timeS = timeText.getText().toString();
-        Date time;
-        time = this.timeToDate(timeS);
+
+        Date date = this.toDate(dateS, timeS);
+
+        Toast t = Toast.makeText(getApplicationContext(), title + desc + type + date , Toast.LENGTH_LONG);
+        t.show();
 
         // TODO: 25/09/17 Tester si ça marche 
 
@@ -93,15 +95,11 @@ public class CreationActivity extends AppCompatActivity {
 
     }
 
-    protected Date toDate(String dateS) throws ParseException{
-        SimpleDateFormat formatter = new SimpleDateFormat("E dd MMM yyyy");
-        return formatter.parse(dateS);
+    protected Date toDate(String dateS, String timeS) throws ParseException{
+        SimpleDateFormat formatter = new SimpleDateFormat("E dd MMM yyyy HH:mm");
+        return formatter.parse(dateS + " " + timeS);
     }
 
-    protected Date timeToDate(String timeS) throws ParseException{
-        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
-        return formatter.parse(timeS);
-    }
 
     public void showDatePickerDialog(View v) {
         DialogFragment dateFragment = new DatePickerFragment();
