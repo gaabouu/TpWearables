@@ -29,8 +29,13 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         return new DatePickerDialog(getActivity(), this, year, month, day);
     }
 
-
-    // TODO: 24/09/2017 Faire en sorte de pouvoir recuperer la date dans l'activité au format date et non en lisant dans le editText 
+    /**
+     * When user select a date and click ok in the date picker fragment
+     * @param view
+     * @param year
+     * @param month
+     * @param day
+     */
     public void onDateSet(DatePicker view, int year, int month, int day) {
         Calendar c = Calendar.getInstance();
         c.set(year, month, day);

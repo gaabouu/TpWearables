@@ -7,8 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -27,6 +29,41 @@ public class CreationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_creation);
 
+        fillSpinner();
+
+        /*
+        Back to main activity on click on return button
+         */
+        FloatingActionButton btnReturn1 = (FloatingActionButton) findViewById(R.id.BackFab);
+        btnReturn1.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        /*
+        Save the new alarm on click on this button
+         */
+        FloatingActionButton saveButton = (FloatingActionButton) findViewById(R.id.SaveFab);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Toast t = Toast.makeText(getApplicationContext(), "Sauvegarde de la nouvelle activité", Toast.LENGTH_LONG);
+                t.show();
+                try {
+                    saveActivity();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+    }
+
+    // TODO: 25/09/2017 rendre possible l'ajout de nouveaux éléments par l'utilisateur
+    /**
+     * fill the spinner with chosen values
+     */
+    public void fillSpinner(){
         Spinner typeSpinner = (Spinner) findViewById(R.id.typeSpinner);
 
         List typeList = new ArrayList();
@@ -41,31 +78,13 @@ public class CreationActivity extends AppCompatActivity {
         typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         typeSpinner.setAdapter(typeAdapter);
-
-        FloatingActionButton btnReturn1 = (FloatingActionButton) findViewById(R.id.BackFab);
-        btnReturn1.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-    /// TODO: 24/09/2017 gerer la sauvegarde de la nouvelle activité 
-        //Implémenter la sauvegarde ici
-        FloatingActionButton saveButton = (FloatingActionButton) findViewById(R.id.SaveFab);
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-              //  Toast t = Toast.makeText(getApplicationContext(), "Sauvegarde de la nouvelle activité", Toast.LENGTH_LONG);
-               // t.show();
-                try {
-                    saveActivity();
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
     }
 
+
+    /**
+     * save alarm to db with actual fields values
+     * @throws ParseException
+     */
     protected void saveActivity() throws ParseException {
         EditText titleEdit = (EditText) findViewById(R.id.nameEdit);
         String title = titleEdit.getText().toString();
@@ -85,27 +104,49 @@ public class CreationActivity extends AppCompatActivity {
 
         Date date = this.toDate(dateS, timeS);
 
-        Toast t = Toast.makeText(getApplicationContext(), title + desc + type + date , Toast.LENGTH_LONG);
-        t.show();
+        String fullDateS = dateS + " " + timeS;
 
-        // TODO: 25/09/17 Tester si ça marche 
 
-        // TODO: 25/09/17 Enregistrer tout ça dans une bdd
+        CheckBox notifCheck = (CheckBox)findViewById(R.id.notifCheck);
+        int not = 0;
+        if(notifCheck.isChecked()) not = 1;
 
+        MyAlarms alarmToAdd = new MyAlarms(0, title, type, desc, fullDateS, not);
+
+
+        DataBaseHandler db = DataBaseHandler.getInstance(this.getApplicationContext());
+        db.addAlarm(alarmToAdd);
+        db.close();
+        finish();
 
     }
 
+    /**
+     * Gives a full Date (format Date) from two String of date and time
+     * @param dateS String of a date >> "E dd MMM yyyy"
+     * @param timeS String of a time >> "HH:mm"
+     * @return Previous date and time in Date format
+     * @throws ParseException
+     */
     protected Date toDate(String dateS, String timeS) throws ParseException{
         SimpleDateFormat formatter = new SimpleDateFormat("E dd MMM yyyy HH:mm");
         return formatter.parse(dateS + " " + timeS);
     }
 
 
+    /**
+     * to show date picker fragment
+     * @param v
+     */
     public void showDatePickerDialog(View v) {
         DialogFragment dateFragment = new DatePickerFragment();
         dateFragment.show(getSupportFragmentManager(), "datePicker");
     }
 
+    /**
+     * to show time picker fragment
+     * @param v
+     */
     public void showTimePickerDialog(View v) {
         DialogFragment timeFragment = new TimePickerFragment();
         timeFragment.show(getSupportFragmentManager(), "timePicker");
