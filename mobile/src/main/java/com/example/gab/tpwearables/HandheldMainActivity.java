@@ -42,15 +42,13 @@ public class HandheldMainActivity extends AppCompatActivity {
         DataBaseHandler db = DataBaseHandler.getInstance(this);
         ArrayList<MyAlarms> allAlarms = db.getAlarms();
         db.close();
+        displayAlarms(allAlarms);
+    }
 
-        ArrayList<String> allAlarmsString = new ArrayList<String>();
-        for(MyAlarms a : allAlarms){
-            allAlarmsString.add(a.toString());
-        }
-
+    protected void displayAlarms(ArrayList<MyAlarms> allAlarms){
         ListView alarmsListView = (ListView)findViewById(R.id.activList);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, allAlarmsString);
+        AlarmAdapter adapter = new AlarmAdapter(this, R.layout.alarm_layout, allAlarms);
         alarmsListView.setAdapter(adapter);
     }
 
