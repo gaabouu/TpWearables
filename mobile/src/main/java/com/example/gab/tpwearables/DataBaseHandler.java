@@ -110,6 +110,45 @@ public class DataBaseHandler extends SQLiteOpenHelper {
 
     }
 
+    public void switchNotif(MyAlarms alarm) {
+
+        Log.d(null, "Switching notif");
+        if(alarm != null) {
+            int id = alarm.getId();
+            int notif = alarm.getNotif();
+            int newNot = 0;
+
+
+            if (notif == 0) {
+                alarm.setNotif(1);
+                newNot = 1;
+            } else {
+                alarm.setNotif(0);
+                newNot = 0;
+            }
+
+            Log.d(null, String.valueOf(id));
+            SQLiteDatabase db = this.getWritableDatabase();
+            String changeNotifQuery = "UPDATE " + TABLE_NAME +
+                    " SET " + KEY_NOTIF + " = " + newNot
+                    + " WHERE " + KEY_ID + " = " + id + " ; ";
+
+            db.execSQL(changeNotifQuery);
+       /* ContentValues cv = new ContentValues();
+        cv.put(KEY_NOTIF, newNot);
+        db.beginTransaction();
+        db.update(TABLE_NAME, cv, KEY_ID + " = " + id, null);
+        db.setTransactionSuccessful();
+        db.endTransaction();*/
+            db.close();
+        }
+        Log.d(null, getAlarms().toString());
+    }
+
+    public void removeAlarm(MyAlarms alarm){
+
+    }
+
 
     /**
      * give all alarms
