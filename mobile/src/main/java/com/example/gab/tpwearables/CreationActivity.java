@@ -24,12 +24,19 @@ import java.util.List;
 
 public class CreationActivity extends AppCompatActivity {
 
+    private boolean modifying = false;
+    private int id = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_creation);
 
         fillSpinner();
+
+
+       // Log.d(null, paramIntent.getStringExtra("title"));
+        existingValues();
 
         /*
         Back to main activity on click on return button
@@ -42,7 +49,7 @@ public class CreationActivity extends AppCompatActivity {
         });
 
         /*
-        Save the new alarm on click on this button
+        Save the alarm on click on this button
          */
         FloatingActionButton saveButton = (FloatingActionButton) findViewById(R.id.SaveFab);
         saveButton.setOnClickListener(new View.OnClickListener() {
@@ -50,7 +57,12 @@ public class CreationActivity extends AppCompatActivity {
                 Toast t = Toast.makeText(getApplicationContext(), "Sauvegarde de la nouvelle activité", Toast.LENGTH_LONG);
                 t.show();
                 try {
-                    saveActivity();
+                        MyAlarms a = createAlarm();
+                        Log.d(null, a.toString());
+                        if(modifying == true) modifyAlarm(a);
+                        else saveAlarm(a);
+
+
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -80,12 +92,11 @@ public class CreationActivity extends AppCompatActivity {
         typeSpinner.setAdapter(typeAdapter);
     }
 
+    protected MyAlarms createAlarm() throws ParseException{
 
-    /**
-     * save alarm to db with actual fields values
-     * @throws ParseException
-     */
-    protected void saveActivity() throws ParseException {
+
+
+
         EditText titleEdit = (EditText) findViewById(R.id.nameEdit);
         String title = titleEdit.getText().toString();
 
@@ -102,7 +113,6 @@ public class CreationActivity extends AppCompatActivity {
         TextView timeText = (TextView)findViewById(R.id.timeText);
         String timeS = timeText.getText().toString();
 
-        Date date = this.toDate(dateS, timeS);
 
         String fullDateS = dateS + " " + timeS;
 
@@ -111,14 +121,37 @@ public class CreationActivity extends AppCompatActivity {
         int not = 0;
         if(notifCheck.isChecked()) not = 1;
 
-        MyAlarms alarmToAdd = new MyAlarms(0, title, type, desc, fullDateS, not);
 
 
-        DataBaseHandler db = DataBaseHandler.getInstance(this.getApplicationContext());
-        db.addAlarm(alarmToAdd);
+        MyAlarms alarmToAdd = new MyAlarms(id, title, type, desc, dateS, timeS, not);
+        return alarmToAdd;
+
+
+
+
+    }
+
+
+    /**
+     * save alarm to db with actual fields values
+     * @throws ParseException
+     */
+    protected void saveAlarm(MyAlarms a) throws ParseException {
+
+            DataBaseHandler db = DataBaseHandler.getInstance(this.getApplicationContext());
+            db.addAlarm(a);
+            db.close();
+            finish();
+
+
+    }
+
+    public void modifyAlarm(MyAlarms a){
+        DataBaseHandler db = DataBaseHandler.getInstance(getApplicationContext());
+        db.modifyAlarm(a);
+        Log.d(null, db.getAlarms().toString());
         db.close();
         finish();
-
     }
 
     /**
@@ -150,6 +183,43 @@ public class CreationActivity extends AppCompatActivity {
     public void showTimePickerDialog(View v) {
         DialogFragment timeFragment = new TimePickerFragment();
         timeFragment.show(getSupportFragmentManager(), "timePicker");
+    }
+
+    public void existingValues(){
+        Intent i = getIntent();
+        if(i == null) return;
+
+        if(i.hasExtra("title")){
+            modifying = true;
+            Log.d(null, "Dans existing values avec intent " + modifying);
+
+            id = Integer.parseInt(i.getStringExtra("id"));
+
+            EditText titleEdit = (EditText) findViewById(R.id.nameEdit);
+            titleEdit.setText(i.getStringExtra("title"));
+
+            EditText descEdit = (EditText) findViewById(R.id.descEdit);
+            descEdit.setText(i.getStringExtra("desc"));
+
+            Spinner typespin = (Spinner)findViewById(R.id.typeSpinner);
+            typespin.setSelection(Integer.parseInt(i.getStringExtra("type")));
+
+            TextView dateText = (TextView)findViewById(R.id.dateText);
+            dateText.setText(i.getStringExtra("date"));
+
+            TextView timeText = (TextView)findViewById(R.id.timeText);
+            timeText.setText(i.getStringExtra("time"));
+
+            CheckBox notCheck = (CheckBox)findViewById(R.id.notifCheck);
+            int not = Integer.parseInt(i.getStringExtra("not"));
+            switch(not){
+                case 0: notCheck.setChecked(false);
+                    break;
+                case 1: notCheck.setChecked(true);
+                    break;
+                default:
+            }
+        }
     }
 
 

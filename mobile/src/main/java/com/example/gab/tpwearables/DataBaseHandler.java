@@ -6,9 +6,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Gab on 25/09/2017.
@@ -29,6 +29,7 @@ public class DataBaseHandler extends SQLiteOpenHelper {
     private static final String KEY_TYPE = "Type";
     private static final String KEY_DESC = "Description";
     private static final String KEY_DATE = "DateA";
+    private static final String KEY_TIME = "TimeA";
     private static final String KEY_NOTIF = "Notif";
 
 
@@ -72,6 +73,7 @@ public class DataBaseHandler extends SQLiteOpenHelper {
                     + KEY_TYPE + " TEXT, "
                     + KEY_DESC + " TEXT, "
                     + KEY_DATE + " TEXT, "
+                    + KEY_TIME + " TEXT, "
                     + KEY_NOTIF + " INTEGER"
                     + ")";
             db.execSQL(CREATE_ALARM_TABLE);
@@ -102,11 +104,45 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         values.put(KEY_TYPE, a.getType());
         values.put(KEY_DESC, a.getDesc());
         values.put(KEY_DATE, a.getDate());
+        values.put(KEY_TIME, a.getTime());
         values.put(KEY_NOTIF, a.getNotif());
 
         Log.d(null, "inserting alarm in db");
         db.insert(TABLE_NAME, null, values);
         db.close();
+
+    }
+
+    public void modifyAlarm(MyAlarms a){
+
+        int id = a.getId()-1;
+
+        String modif_Query = "UPDATE " + TABLE_NAME + " SET "
+                + KEY_TITLE + " = '" + a.getTitle() + "' AND "
+                + KEY_TYPE + " = '" + a.getType() + "' AND "
+                + KEY_DESC + " = '" + a.getDesc() + "' AND "
+                + KEY_DATE + " = '" + a.getDate() + "' AND "
+                + KEY_TIME + " = '" + a.getTime() + "' AND "
+                + KEY_NOTIF + " = " + a.getNotif()
+                + " WHERE " + KEY_ID + " = " + id + " ; ";
+
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_TITLE, a.getTitle());
+        values.put(KEY_TYPE, a.getType());
+        values.put(KEY_DESC, a.getDesc());
+        values.put(KEY_DATE, a.getDate());
+        values.put(KEY_TIME, a.getTime());
+        values.put(KEY_NOTIF, a.getNotif());
+
+
+        Log.d(null, getAlarms().toString() + " " + a.getId() + " " + modif_Query);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.update(TABLE_NAME, values, KEY_ID + " = " + id+1, null);
+        //db.execSQL(modif_Query);
+        db.close();
+
 
     }
 
@@ -134,20 +170,13 @@ public class DataBaseHandler extends SQLiteOpenHelper {
                     + " WHERE " + KEY_ID + " = " + id + " ; ";
 
             db.execSQL(changeNotifQuery);
-       /* ContentValues cv = new ContentValues();
-        cv.put(KEY_NOTIF, newNot);
-        db.beginTransaction();
-        db.update(TABLE_NAME, cv, KEY_ID + " = " + id, null);
-        db.setTransactionSuccessful();
-        db.endTransaction();*/
+
             db.close();
         }
         Log.d(null, getAlarms().toString());
     }
 
-    public void removeAlarm(MyAlarms alarm){
 
-    }
 
 
     /**
@@ -170,7 +199,8 @@ public class DataBaseHandler extends SQLiteOpenHelper {
                 alarm.setType(cursor.getString(2));
                 alarm.setDesc(cursor.getString(3));
                 alarm.setDate(cursor.getString(4));
-                alarm.setNotif(Integer.parseInt(cursor.getString(5)));
+                alarm.setTime(cursor.getString(5));
+                alarm.setNotif(Integer.parseInt(cursor.getString(6)));
 
                 alarmsList.add(alarm);
             }while(cursor.moveToNext());
@@ -178,4 +208,23 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         Log.d(null, "getAlarms giving arrayList");
         return alarmsList;
     }
+
+    /**
+     * removes the alarm a from the Database
+     * @param a the MyAlarms to delete
+     */
+    public void delete(MyAlarms a){
+
+
+        String delete_query = "DELETE FROM " + TABLE_NAME
+                            + " WHERE " + KEY_ID + " = " + a.getId();
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(delete_query);
+        db.close();
+
+
+    }
+
+
 }

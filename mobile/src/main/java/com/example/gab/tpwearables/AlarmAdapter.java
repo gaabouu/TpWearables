@@ -1,11 +1,14 @@
 package com.example.gab.tpwearables;
 
 import android.content.Context;
+import android.content.Intent;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,14 +37,20 @@ public class AlarmAdapter extends ArrayAdapter<MyAlarms> {
         public TextView date;
         public TextView id;
         public ImageView notif;
+        public TextView desc;
+        public Button edit_button;
+        public Button delete_button;
     }
 
     protected int getCount(ArrayList<MyAlarms> list){
         return list.size();
     }
 
+   
+
     @Override
     public View getView(int pos, View convertView, ViewGroup parent){
+
         final ViewHolder viewHolder;
         View rowView = convertView;
         if(rowView == null){
@@ -53,16 +62,24 @@ public class AlarmAdapter extends ArrayAdapter<MyAlarms> {
             viewHolder.date = (TextView)rowView.findViewById(R.id.textView_Date_alarm_layout);
             viewHolder.id = (TextView)rowView.findViewById(R.id.textView_Id_alarm_layout);
             viewHolder.notif = (ImageView)rowView.findViewById(R.id.imageView_notif_alarm_layout);
+            viewHolder.desc = (TextView)rowView.findViewById(R.id.text_desc);
+            viewHolder.edit_button=(Button)rowView.findViewById(R.id.button_edit);
+            viewHolder.delete_button=(Button)rowView.findViewById(R.id.button_delete);
             rowView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder)rowView.getTag();
         }
+
         final MyAlarms item = alarms.get(pos);
         viewHolder.id.setText(String.valueOf(item.getId()));
         viewHolder.title.setText(item.getTitle());
         viewHolder.type.setText(item.getType());
-        viewHolder.date.setText(item.getDate());
+        viewHolder.date.setText(item.getDate() + " " + item.getTime());
         setNotifImg(viewHolder.notif, item.getNotif());
+        viewHolder.desc.setText(item.getDesc());
+        viewHolder.desc.setVisibility(View.GONE);
+        viewHolder.edit_button.setVisibility(View.GONE);
+        viewHolder.delete_button.setVisibility(View.GONE);
 
         viewHolder.notif.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,12 +93,69 @@ public class AlarmAdapter extends ArrayAdapter<MyAlarms> {
             }
         });
 
+        viewHolder.edit_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast t = Toast.makeText(mContext, "Modification de l'alarme " + item.getTitle(), Toast.LENGTH_SHORT);
+                t.show();
 
+                launchModification(item);
+
+
+
+
+
+            }
+        });
+
+        viewHolder.delete_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                DataBaseHandler db = DataBaseHandler.getInstance(getContext());
+                db.delete(item);
+
+                db.close();
+
+
+                modificationHappened();
+
+
+            }
+        });
+
+
+        rowView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                switch (viewHolder.desc.getVisibility()){
+                    case View.GONE :
+                        viewHolder.desc.setVisibility(View.VISIBLE);
+                        viewHolder.edit_button.setVisibility(View.VISIBLE);
+                        viewHolder.delete_button.setVisibility(View.VISIBLE);
+                        break;
+                    case View.VISIBLE :
+                        viewHolder.desc.setVisibility(View.GONE);
+                        viewHolder.edit_button.setVisibility(View.GONE);
+                        viewHolder.delete_button.setVisibility(View.GONE);
+                        break;
+                    default:
+                        Toast t = Toast.makeText(getContext(), "click on an alarm", Toast.LENGTH_SHORT);
+                        t.show();
+
+                }
+
+            }
+        });
+
+       // Log.d(null, "dans getView, id: " + viewHolder.id.getText());
 
         return rowView;
     }
 
-    // TODO: 03/10/2017 ajouter le moyen de supprimer une alarme 
+    // TODO: 05/10/2017 faire en sortes que le listView de l'activité principale soit mis a jour 
     
     /**
      * Set Img for notification
@@ -113,6 +187,30 @@ public class AlarmAdapter extends ArrayAdapter<MyAlarms> {
             toast.show();
         }
     }
+
+    public void modificationHappened(){
+        Log.d(null, "modfificationHappening " + alarms);
+        DataBaseHandler db = DataBaseHandler.getInstance(getContext());
+        alarms = db.getAlarms();
+        db.close();
+        Log.d(null, "modfificationHappened " + alarms);
+    }
+
+    public void launchModification(MyAlarms a){
+        Intent modifyIntent = new Intent(getContext(), CreationActivity.class);
+        modifyIntent.putExtra("id", Integer.toString(a.getId()));
+        modifyIntent.putExtra("title", a.getTitle());
+        modifyIntent.putExtra("type", a.typeToPos());
+        modifyIntent.putExtra("desc", a.getDesc());
+        modifyIntent.putExtra("date", a.getDate());
+        modifyIntent.putExtra("time", a.getTime());
+        modifyIntent.putExtra("not", Integer.toString(a.getNotif()));
+        mContext.startActivity(modifyIntent);
+
+
+    }
+
+
 
 
 

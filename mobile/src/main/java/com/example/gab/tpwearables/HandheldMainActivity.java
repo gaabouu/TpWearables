@@ -65,16 +65,18 @@ public class HandheldMainActivity extends AppCompatActivity {
                 searchAlarms(searchEdit.getText().toString());
             }
         });
+
+
     }
 
     /**
      * Test DataBase to display all alarms
      */
-    protected void tryDb(){
+    public final void tryDb(){
         Log.d(null, "testing db");
         DataBaseHandler db = DataBaseHandler.getInstance(this);
         alarms = db.getAlarms();
-        Log.d(null, db.getAlarms().toString());
+        //Log.d(null, db.getAlarms().toString());
         db.close();
         displayAlarms(alarms);
     }
@@ -88,6 +90,8 @@ public class HandheldMainActivity extends AppCompatActivity {
 
         AlarmAdapter adapter = new AlarmAdapter(this, R.layout.alarm_layout, allAlarms);
         alarmsListView.setAdapter(adapter);
+
+
     }
 
 
@@ -124,7 +128,8 @@ public class HandheldMainActivity extends AppCompatActivity {
         startActivity(CreateIntent);
     }
 
-    // TODO: 03/10/2017 ajouter une fonction pour la modification d'une alarme 
+
+
 
 
 }

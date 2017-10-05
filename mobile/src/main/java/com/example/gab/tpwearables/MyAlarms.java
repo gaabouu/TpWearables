@@ -11,6 +11,7 @@ public class MyAlarms {
     private String type;
     private String desc;
     private String date;
+    private String time;
     private int notif;
 
 
@@ -18,12 +19,13 @@ public class MyAlarms {
 
     }
 
-    public MyAlarms(int id, String title, String type, String desc, String date, int not){
+    public MyAlarms(int id, String title, String type, String desc, String date, String time, int not){
         this.id = id;
         this.title = title;
         this.type = type;
         this.desc = desc;
         this.date = date;
+        this.time = time;
         this.notif = not;
     }
 
@@ -78,10 +80,29 @@ public class MyAlarms {
     public String toString(){
         String result;
 
-        result = this.getTitle() + " " + this.getType() + " " + this.getDate() + " " + this.getNotif();
+        result = this.getTitle() + " " + this.getType() + " " + this.getDate() + " " + this.getNotif() + " " + this.getId();
 
 
 
         return result;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public String typeToPos(){
+        switch(this.type){
+            case "RDV": return "0";
+            case "Travail": return "1";
+            case "Anniversaire": return "2";
+            case "Sport": return "3";
+            case "Autres": return "4";
+            default: return "0";
+        }
     }
 }
