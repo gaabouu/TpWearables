@@ -155,8 +155,7 @@ public class AlarmAdapter extends ArrayAdapter<MyAlarms> {
         return rowView;
     }
 
-    // TODO: 05/10/2017 faire en sortes que le listView de l'activité principale soit mis a jour 
-    
+
     /**
      * Set Img for notification
      * @param v ImageView to change
@@ -188,14 +187,25 @@ public class AlarmAdapter extends ArrayAdapter<MyAlarms> {
         }
     }
 
+    /**
+     * refresh the adapter changing values
+     */
     public void modificationHappened(){
         Log.d(null, "modfificationHappening " + alarms);
         DataBaseHandler db = DataBaseHandler.getInstance(getContext());
-        alarms = db.getAlarms();
+        ArrayList<MyAlarms> newAlarms;
+        newAlarms = db.getAlarms();
         db.close();
+        alarms.clear();
+        alarms.addAll(newAlarms);
+        notifyDataSetChanged();
         Log.d(null, "modfificationHappened " + alarms);
     }
 
+    /**
+     * to launch the modification of the chosen alarm, setting the intent with alarm values
+     * @param a the MyAlarms object to modify
+     */
     public void launchModification(MyAlarms a){
         Intent modifyIntent = new Intent(getContext(), CreationActivity.class);
         modifyIntent.putExtra("id", Integer.toString(a.getId()));

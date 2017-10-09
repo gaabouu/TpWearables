@@ -95,6 +95,10 @@ public class MyAlarms {
         this.time = time;
     }
 
+    /**
+     * to get the position of the selected type in the spinner
+     * @return the position of the item in the spinner in String
+     */
     public String typeToPos(){
         switch(this.type){
             case "RDV": return "0";
@@ -104,5 +108,21 @@ public class MyAlarms {
             case "Autres": return "4";
             default: return "0";
         }
+    }
+
+    /**
+     * search if the alarm contains the charSequence in one of his fields
+     * @param search the CharSequece to search for
+     * @return true if yes false if not
+     */
+    public boolean contains(String search){
+        boolean result = false;
+        if(title.contains(search) || type.contains(search) || desc.contains(search) || date.contains(search) || time.contains(search)){
+            result = true;
+        } else if(search.matches("\\d+(?:\\.\\d+)?")){
+            if(id == Integer.parseInt(search)) result = true;
+        }
+
+        return result;
     }
 }

@@ -113,6 +113,10 @@ public class DataBaseHandler extends SQLiteOpenHelper {
 
     }
 
+    /**
+     * to modify an alarm in the db
+     * @param a the existing alarm with new values
+     */
     public void modifyAlarm(MyAlarms a){
 
         int id = a.getId()-1;
@@ -146,6 +150,10 @@ public class DataBaseHandler extends SQLiteOpenHelper {
 
     }
 
+    /**
+     * switch the notif boolean of the selected alarm (to enable or disable the notification)
+     * @param alarm to modify
+     */
     public void switchNotif(MyAlarms alarm) {
 
         Log.d(null, "Switching notif");

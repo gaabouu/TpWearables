@@ -54,13 +54,19 @@ public class CreationActivity extends AppCompatActivity {
         FloatingActionButton saveButton = (FloatingActionButton) findViewById(R.id.SaveFab);
         saveButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Toast t = Toast.makeText(getApplicationContext(), "Sauvegarde de la nouvelle activité", Toast.LENGTH_LONG);
-                t.show();
+
                 try {
-                        MyAlarms a = createAlarm();
-                        Log.d(null, a.toString());
-                        if(modifying == true) modifyAlarm(a);
-                        else saveAlarm(a);
+                        if(hasEmpty()){
+                            Toast t2 = Toast.makeText(getApplicationContext(), "Vous n'avez pas rempli tous les champs", Toast.LENGTH_SHORT);
+                            t2.show();
+                        } else {
+                            Toast t = Toast.makeText(getApplicationContext(), "Sauvegarde de la nouvelle activité", Toast.LENGTH_LONG);
+                            t.show();
+                            MyAlarms a = createAlarm();
+                            Log.d(null, a.toString());
+                            if (modifying == true) modifyAlarm(a);
+                            else saveAlarm(a);
+                        }
 
 
                 } catch (ParseException e) {
@@ -71,7 +77,6 @@ public class CreationActivity extends AppCompatActivity {
 
     }
 
-    // TODO: 25/09/2017 rendre possible l'ajout de nouveaux éléments par l'utilisateur
     /**
      * fill the spinner with chosen values
      */
@@ -92,6 +97,11 @@ public class CreationActivity extends AppCompatActivity {
         typeSpinner.setAdapter(typeAdapter);
     }
 
+    /**
+     * Create a new MyAlarms object with actual form's values
+     * @return The created MyAlarms
+     * @throws ParseException
+     */
     protected MyAlarms createAlarm() throws ParseException{
 
 
@@ -146,6 +156,10 @@ public class CreationActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * modify the chosen alarm in the db
+     * @param a the MyAlarms object to modify
+     */
     public void modifyAlarm(MyAlarms a){
         DataBaseHandler db = DataBaseHandler.getInstance(getApplicationContext());
         db.modifyAlarm(a);
@@ -185,6 +199,9 @@ public class CreationActivity extends AppCompatActivity {
         timeFragment.show(getSupportFragmentManager(), "timePicker");
     }
 
+    /**
+     * if intent came with values it's a modification then fill the form with the right values
+     */
     public void existingValues(){
         Intent i = getIntent();
         if(i == null) return;
@@ -220,6 +237,25 @@ public class CreationActivity extends AppCompatActivity {
                 default:
             }
         }
+    }
+
+    /**
+     * test the form's fields to know if one is empty
+     * @return true if something is empty, false if nothing is
+     */
+    public boolean hasEmpty(){
+        boolean result = false;
+        EditText titleEdit = (EditText) findViewById(R.id.nameEdit);
+        String title = titleEdit.getText().toString();
+        TextView dateText = (TextView)findViewById(R.id.dateText);
+        String date = dateText.getText().toString();
+        TextView timeText = (TextView)findViewById(R.id.timeText);
+        String time = timeText.getText().toString();
+
+        if(title.isEmpty() || date.isEmpty() || time.isEmpty()) result = true;
+
+        return result;
+
     }
 
 

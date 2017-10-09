@@ -60,9 +60,13 @@ public class HandheldMainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                Toast t = Toast.makeText(getApplicationContext(), "apres", Toast.LENGTH_SHORT);
-                t.show();
-                searchAlarms(searchEdit.getText().toString());
+                ArrayList<MyAlarms> found = searchAlarms(searchEdit.getText().toString());
+                if(!found.isEmpty()){
+                    displayAlarms(found);
+                } else {
+                    Toast t = Toast.makeText(getApplicationContext(), "aucune alarme trouvée avec ce(s) terme(s)", Toast.LENGTH_SHORT);
+                    t.show();
+                }
             }
         });
 
@@ -95,19 +99,19 @@ public class HandheldMainActivity extends AppCompatActivity {
     }
 
 
-    // TODO: 03/10/2017 gerer la recherche dans la liste d'alarmes 
-    
+
     /**
      * search in alarms for a string (in all parameters of the alarm)
      * @param w String of the wanted word
      */
-    protected void searchAlarms(String w){
-        Toast t = Toast.makeText(getApplicationContext(), "recherche de " + w,Toast.LENGTH_SHORT);
-        t.show();
+    protected ArrayList<MyAlarms> searchAlarms(String w){
+        ArrayList<MyAlarms> found = new ArrayList<MyAlarms>();
 
         for(MyAlarms a : alarms){
-
+            if(a.contains(w)) found.add(a);
         }
+
+        return found;
 
     }
 
@@ -129,7 +133,7 @@ public class HandheldMainActivity extends AppCompatActivity {
     }
 
 
-
+    // TODO: 09/10/2017 Créer les notifications 
 
 
 }
